@@ -3,6 +3,8 @@ import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import { FEED_QUERY } from './LinkList';
 
+import { LINKS_PER_PAGE } from './constants'
+
 const POST_MUTATION = gql`
 mutation PostMutation($description: String!, $url: String!) {
   post(
@@ -71,13 +73,16 @@ class CreateLink extends Component {
       },
       update: (store, { data: { post } }) => {
         const variables = {
-          first: null,
-          skip: null,
-          orderBy: null
+          first: LINKS_PER_PAGE,
+          skip: 0,
+          orderBy: 'createdAt_DESC',
         };
-        const data = store.readQuery({ query: FEED_QUERY, variables});
+
+        const data = store.readQuery({
+          query: FEED_QUERY,
+          variables,
+        })
         data.feed.links.splice(0,0,post);
-        console.log(data.feed.links);
         store.writeQuery({
           query: FEED_QUERY,
           variables,
